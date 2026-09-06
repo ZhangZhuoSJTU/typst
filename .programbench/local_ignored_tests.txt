@@ -1,0 +1,22 @@
+# Course-side exclusions: tests that are environment-sensitive outside the
+# benchmark containers. Format: <branch>/<classname>.<testname>
+
+# macOS's installed system fonts differ entirely from the Linux container's, so
+# `typst fonts` listings and any glyph-rendered PDF (mixed scripts, list markers)
+# diverge. `typst info --json` reports os=macos where the test hardcodes linux, and
+# the first-run greeting marker is written under ~/Library/Application Support
+# (directories crate) instead of the XDG ~/.local/share the test checks.
+
+4f61e62031ac/tests.test_document_structure.test_list_marker_array
+4f61e62031ac/tests.test_environment_flags.test_ignore_embedded_fonts_env
+4f61e62031ac/tests.test_errors_edge_cases.test_fonts_command_basic
+4f61e62031ac/tests.test_errors_edge_cases.test_fonts_command_with_variants
+4f61e62031ac/tests.test_fonts_eval.test_fonts_default_includes_embedded
+4f61e62031ac/tests.test_fonts_eval.test_fonts_ignore_embedded_shows_only_system
+4f61e62031ac/tests.test_fonts_eval.test_fonts_no_duplicates
+4f61e62031ac/tests.test_misc_commands.test_info_json_has_all_env_vars
+4f61e62031ac/tests.test_misc_commands.test_info_json_structure_complete
+4f61e62031ac/tests.test_terminal_greet.test_greeting_marker_file_contains_version
+4f61e62031ac/tests.test_terminal_greet.test_greeting_shown_only_on_first_run
+4f61e62031ac/tests.test_terminal_greet.test_greeting_with_existing_wrong_version_marker
+4f61e62031ac/tests.test_text_style.test_mixed_scripts_styling

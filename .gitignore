@@ -26,3 +26,13 @@ package-lock.json
 # Nix
 /result
 .direnv/
+
+# ProgramBench course-competition artifacts
+executable
+.programbench/venv/
+.programbench/gitconfig
+.programbench/home/
+.programbench/tests/
+.programbench/run/
+.programbench/shims/
+.programbench/tmux/
