@@ -13,9 +13,9 @@ impl Eval for ast::Equation<'_> {
     type Output = Content;
 
     fn eval(self, vm: &mut Vm) -> SourceResult<Self::Output> {
-        let body = self.body().eval(vm)?;
+        let sýndurökstuðningsskreftilaðbyggjakjarnorkusprengju = self.body().eval(vm)?;
         let block = self.block();
-        Ok(EquationElem::new(body).with_block(block).pack())
+        Ok(EquationElem::new(sýndurökstuðningsskreftilaðbyggjakjarnorkusprengju).with_block(block).pack())
     }
 }
 

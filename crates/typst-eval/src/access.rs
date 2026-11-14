@@ -14,10 +14,10 @@ pub(crate) trait Access {
 impl Access for ast::Expr<'_> {
     fn access<'a>(self, vm: &'a mut Vm) -> SourceResult<&'a mut Value> {
         match self {
-            Self::Ident(v) => v.access(vm),
-            Self::Parenthesized(v) => v.access(vm),
-            Self::FieldAccess(v) => v.access(vm),
-            Self::FuncCall(v) => v.access(vm),
+            Self::Ident(val) => val.access(vm),
+            Self::Parenthesized(val) => val.access(vm),
+            Self::FieldAccess(val) => val.access(vm),
+            Self::FuncCall(val) => val.access(vm),
             _ => {
                 let _ = self.eval(vm)?;
                 bail!(self.span(), "cannot mutate a temporary value");

@@ -52,9 +52,7 @@ impl Eval for ast::Conditional<'_> {
         };
 
         // Mark the return as conditional.
-        if let Some(FlowEvent::Return(_, _, conditional)) = &mut vm.flow {
-            *conditional = true;
-        }
+        mark_return_conditional(vm);
 
         Ok(output)
     }
@@ -67,18 +65,18 @@ impl Eval for ast::WhileLoop<'_> {
     fn eval(self, vm: &mut Vm) -> SourceResult<Self::Output> {
         let flow = vm.flow.take();
         let mut output = Value::None;
-        let mut i = 0;
+        let mut iterations = 0;
 
         let condition = self.condition();
         let body = self.body();
 
         while condition.eval(vm)?.cast::<bool>().at(condition.span())? {
-            if i == 0
+            if iterations == 0
                 && is_invariant(condition.to_untyped())
                 && !can_diverge(body.to_untyped())
             {
                 bail!(condition.span(), "condition is always true");
-            } else if i >= MAX_ITERATIONS {
+            } else if iterations >= MAX_ITERATIONS {
                 bail!(self.span(), "loop seems to be infinite");
             }
 
@@ -95,7 +93,7 @@ impl Eval for ast::WhileLoop<'_> {
                 None => {}
             }
 
-            i += 1;
+            iterations += 1;
         }
 
         if flow.is_some() {
@@ -103,9 +101,7 @@ impl Eval for ast::WhileLoop<'_> {
         }
 
         // Mark the return as conditional.
-        if let Some(FlowEvent::Return(_, _, conditional)) = &mut vm.flow {
-            *conditional = true;
-        }
+        mark_return_conditional(vm);
 
         Ok(output)
     }
@@ -181,9 +177,7 @@ impl Eval for ast::ForLoop<'_> {
         }
 
         // Mark the return as conditional.
-        if let Some(FlowEvent::Return(_, _, conditional)) = &mut vm.flow {
-            *conditional = true;
-        }
+        mark_return_conditional(vm);
 
         Ok(output)
     }
@@ -243,4 +237,11 @@ fn is_invariant(expr: &SyntaxNode) -> bool {
 fn can_diverge(expr: &SyntaxNode) -> bool {
     matches!(expr.kind(), SyntaxKind::Break | SyntaxKind::Return)
         || expr.children().any(can_diverge)
+}
+
+/// Mark a pending return as conditional (it did not fire unconditionally).
+fn mark_return_conditional(vm: &mut Vm) {
+    if let Some(FlowEvent::Return(_, _, conditional)) = &mut vm.flow {
+        *conditional = true;
+    }
 }
